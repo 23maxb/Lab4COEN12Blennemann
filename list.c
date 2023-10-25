@@ -30,6 +30,9 @@ typedef struct list {
  * Creates an empty list with a single dummy node (data = NULL)
  *
  * @param compare method containing the way to compare values
+ * if compare == NULL then the user cannot call findItem or removeItem
+ * For the purposes of this file compare simply must return 0 if the elements are equal and any non-zero value
+ * if the values are not equal.
  * @return the list created
  * @timeComplexity O(1)
  */
@@ -165,6 +168,7 @@ void* removeLast(LIST* lp) {
  *
  * @param lp the list to access
  * @return the first element's value
+ * @timeComplexity O(1)
  */
 void* getFirst(LIST* lp) {
     assert(lp != NULL);
@@ -176,6 +180,7 @@ void* getFirst(LIST* lp) {
  *
  * @param lp the list to access
  * @return the value stored in the last node
+ * @timeComplexity O(1)
  */
 void* getLast(LIST* lp) {
     assert(lp != NULL);
@@ -221,6 +226,7 @@ void removeItem(LIST* lp, void* item) {
 void* findItem(LIST* lp, void* item) {
     assert(lp != NULL);
     assert(item != NULL);
+    assert(lp->compare != NULL);
     Node* pDel = lp->head->next;
 
     while (pDel != lp->head) {

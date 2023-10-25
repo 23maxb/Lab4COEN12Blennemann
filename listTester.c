@@ -28,12 +28,6 @@ int main(int argv, char* argc[]) {
     removeLast(lp);
     printf("last: %d\n", *(int*) getLast(lp));
     printf("numItems: %d\n", numItems(lp));
-    debugPrint(lp);
-
-
-    p = malloc(sizeof(int));
-    *p = 2;
-    printf("findItem: %d\n", *(int*) findItem(lp, p));
     destroyList(lp);
     exit(EXIT_SUCCESS);
 }
