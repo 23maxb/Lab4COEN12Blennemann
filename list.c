@@ -173,3 +173,11 @@ void* getItems(LIST* lp) {
     }
     return items;
 }
+
+void debugPrint(LIST* lp) {
+    Node* a = lp->head->next;
+    while (a != NULL && a->data != NULL) {
+        printf("%d\n", *(int*) a->data);
+        a = a->next;
+    }
+}

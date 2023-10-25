@@ -29,6 +29,8 @@ int main(int argv, char* argc[]) {
     printf("first: %d\n", *(int*) getFirst(lp));
     printf("last: %d\n", *(int*) getLast(lp));
     printf("numItems: %d\n", numItems(lp));
+    debugPrint(lp);
+
     destroyList(lp);
     exit(EXIT_SUCCESS);
 }
