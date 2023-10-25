@@ -21,12 +21,12 @@
  *		http://www.gamedev.net/reference/articles/article1637.asp
  */
 
-# include <time.h>		/* for time(), used to seed the rng */
+# include <time.h>        /* for time(), used to seed the rng */
 # include <stdio.h>
 # include <stdlib.h>
 # include <assert.h>
 # include <curses.h>
-# include <unistd.h>		/* for usleep() */
+# include <unistd.h>        /* for usleep() */
 # include <stdbool.h>
 # include "list.h"
 
@@ -37,8 +37,8 @@ typedef struct coord COORD;
 
 int width;
 int height;
-LIST *list;
-CELL **maze;
+LIST* list;
+CELL** maze;
 
 struct cell {
     int from;
@@ -56,9 +56,8 @@ struct coord {
  * Description:	Allocate and initialize a new coordinate pair.
  */
 
-static COORD *mkcoord(int x, int y)
-{
-    COORD *cp;
+static COORD* mkcoord(int x, int y) {
+    COORD* cp;
 
 
     cp = malloc(sizeof(COORD));
@@ -81,34 +80,33 @@ static COORD *mkcoord(int x, int y)
  *		and another when backtracking.
  */
 
-static void draw(int x, int y, bool forward)
-{
+static void draw(int x, int y, bool forward) {
     if (!forward) {
-	move(y * 2 + 1, x * 2 + 1);
-	echochar(' ');
+        move(y * 2 + 1, x * 2 + 1);
+        echochar(' ');
     } else
-	attron(A_REVERSE);
+        attron(A_REVERSE);
 
     if (maze[y][x].from == 1) {
-	move(y * 2 + 1, x * 2 + 1 - 1);
-	echochar(' ');
+        move(y * 2 + 1, x * 2 + 1 - 1);
+        echochar(' ');
     } else if (maze[y][x].from == -1) {
-	move(y * 2 + 1, x * 2 + 1 + 1);
-	echochar(' ');
+        move(y * 2 + 1, x * 2 + 1 + 1);
+        echochar(' ');
     } else if (maze[y][x].from == width) {
-	move(y * 2 + 1 - 1, x * 2 + 1);
-	echochar(' ');
+        move(y * 2 + 1 - 1, x * 2 + 1);
+        echochar(' ');
     } else if (maze[y][x].from == -width) {
-	move(y * 2 + 1 + 1, x * 2 + 1);
-	echochar(' ');
+        move(y * 2 + 1 + 1, x * 2 + 1);
+        echochar(' ');
     }
 
     if (forward) {
-	usleep(delay);
-	move(y * 2 + 1, x * 2 + 1);
-	echochar(' ');
-	usleep(delay);
-	attroff(A_REVERSE);
+        usleep(delay);
+        move(y * 2 + 1, x * 2 + 1);
+        echochar(' ');
+        usleep(delay);
+        attroff(A_REVERSE);
     }
 }
 
@@ -121,17 +119,16 @@ static void draw(int x, int y, bool forward)
  *		allocated array.
  */
 
-static void createMaze(void)
-{
+static void createMaze(void) {
     int y;
 
 
-    maze = malloc(sizeof(CELL *) * height);
+    maze = malloc(sizeof(CELL*) * height);
     assert(maze != NULL);
 
-    for (y = 0; y < height; y ++) {
-	maze[y] = malloc(sizeof(CELL) * width);
-	assert(maze[y] != NULL);
+    for (y = 0; y < height; y++) {
+        maze[y] = malloc(sizeof(CELL) * width);
+        assert(maze[y] != NULL);
     }
 
     srand(time(NULL));
@@ -145,17 +142,16 @@ static void createMaze(void)
  *		We'll break through the walls later when we build the maze.
  */
 
-static void initMaze(void)
-{
+static void initMaze(void) {
     int x, y;
 
 
-    for (y = 0; y < height; y ++)
-	for (x = 0; x < width; x ++) {
-	    maze[y][x].visited = false;
-	    maze[y][x].bottom = true;
-	    maze[y][x].right = true;
-	}
+    for (y = 0; y < height; y++)
+        for (x = 0; x < width; x++) {
+            maze[y][x].visited = false;
+            maze[y][x].bottom = true;
+            maze[y][x].right = true;
+        }
 }
 
 
@@ -168,55 +164,54 @@ static void initMaze(void)
  *		is represented by a two-dimensional coordinate.
  */
 
-static void buildMaze(int y, int x)
-{
+static void buildMaze(int y, int x) {
     int numOffsets, offset, offsets[4];
-    COORD *cp;
+    COORD* cp;
 
 
     while (1) {
-	numOffsets = 0;
-	maze[y][x].visited = true;
+        numOffsets = 0;
+        maze[y][x].visited = true;
 
-	if (y > 0 && !maze[y - 1][x].visited)
-	    offsets[numOffsets ++] = -width;
+        if (y > 0 && !maze[y - 1][x].visited)
+            offsets[numOffsets++] = -width;
 
-	if (y < height - 1 && !maze[y + 1][x].visited)
-	    offsets[numOffsets ++] = width;
+        if (y < height - 1 && !maze[y + 1][x].visited)
+            offsets[numOffsets++] = width;
 
-	if (x > 0 && !maze[y][x - 1].visited)
-	    offsets[numOffsets ++] = -1;
+        if (x > 0 && !maze[y][x - 1].visited)
+            offsets[numOffsets++] = -1;
 
-	if (x < width - 1 && !maze[y][x + 1].visited)
-	    offsets[numOffsets ++] = 1;
+        if (x < width - 1 && !maze[y][x + 1].visited)
+            offsets[numOffsets++] = 1;
 
-	if (numOffsets > 0) {
-	    offset = offsets[rand() % numOffsets];
-	    addFirst(list, mkcoord(x, y));
+        if (numOffsets > 0) {
+            offset = offsets[rand() % numOffsets];
+            addFirst(list, mkcoord(x, y));
 
-	    if (offset == -width) {
-		maze[y - 1][x].bottom = false;
-		buildMaze(y - 1, x);
-	    } else if (offset == width) {
-		maze[y][x].bottom = false;
-		buildMaze(y + 1, x);
-	    } else if (offset == -1) {
-		maze[y][x - 1].right = false;
-		buildMaze(y, x - 1);
-	    } else if (offset == 1) {
-		maze[y][x].right = false;
-		buildMaze(y, x + 1);
-	    } else
-		abort();
+            if (offset == -width) {
+                maze[y - 1][x].bottom = false;
+                buildMaze(y - 1, x);
+            } else if (offset == width) {
+                maze[y][x].bottom = false;
+                buildMaze(y + 1, x);
+            } else if (offset == -1) {
+                maze[y][x - 1].right = false;
+                buildMaze(y, x - 1);
+            } else if (offset == 1) {
+                maze[y][x].right = false;
+                buildMaze(y, x + 1);
+            } else
+                abort();
 
-	} else if (numItems(list) > 0) {
-	    cp = removeFirst(list);
-	    x = cp->x;
-	    y = cp->y;
-	    free(cp);
+        } else if (numItems(list) > 0) {
+            cp = removeFirst(list);
+            x = cp->x;
+            y = cp->y;
+            free(cp);
 
-	} else
-	    break;
+        } else
+            break;
     }
 
     maze[height - 1][width - 1].right = false;
@@ -236,85 +231,84 @@ static void buildMaze(int y, int x)
  *		drawing character.  I did say it was ugly.
  */
 
-static void printMaze(void)
-{
+static void printMaze(void) {
     int x, y;
     bool eastBottom, southRight;
 
     addch(' ');
 
-    for (x = 0; x < width; x ++) {
-	addch(ACS_HLINE);
+    for (x = 0; x < width; x++) {
+        addch(ACS_HLINE);
 
-	if (x == width - 1)
-	    addch(ACS_URCORNER);
-	else if (maze[0][x].right)
-	    addch(ACS_TTEE);
-	else
-	    addch(ACS_HLINE);
+        if (x == width - 1)
+            addch(ACS_URCORNER);
+        else if (maze[0][x].right)
+            addch(ACS_TTEE);
+        else
+            addch(ACS_HLINE);
     }
 
     addch('\n');
 
-    for (y = 0; y < height; y ++) {
-	addch(y != 0 ? ACS_VLINE : ' ');
+    for (y = 0; y < height; y++) {
+        addch(y != 0 ? ACS_VLINE : ' ');
 
-	for (x = 0; x < width; x ++) {
-	    addch(' ');
-	    addch(maze[y][x].right ? ACS_VLINE : ' ');
-	}
+        for (x = 0; x < width; x++) {
+            addch(' ');
+            addch(maze[y][x].right ? ACS_VLINE : ' ');
+        }
 
-	addch('\n');
+        addch('\n');
 
-	if (y == height - 1)
-	    addch(ACS_LLCORNER);
-	else if (maze[y][0].bottom)
-	    addch(ACS_LTEE);
-	else
-	    addch(ACS_VLINE);
+        if (y == height - 1)
+            addch(ACS_LLCORNER);
+        else if (maze[y][0].bottom)
+            addch(ACS_LTEE);
+        else
+            addch(ACS_VLINE);
 
-	for (x = 0; x < width; x ++) {
-	    eastBottom = (x != width - 1 && maze[y][x + 1].bottom);
-	    southRight = (y != height - 1 && maze[y + 1][x].right);
-	    addch(maze[y][x].bottom ? ACS_HLINE : ' ');
+        for (x = 0; x < width; x++) {
+            eastBottom = (x != width - 1 && maze[y][x + 1].bottom);
+            southRight = (y != height - 1 && maze[y + 1][x].right);
+            addch(maze[y][x].bottom ? ACS_HLINE : ' ');
 
-	    if (maze[y][x].bottom) {
-		if (maze[y][x].right) {
-		    if (eastBottom && southRight)
-			addch(ACS_PLUS);
-		    else if (eastBottom)
-			addch(ACS_BTEE);
-		    else if (southRight)
-			addch(ACS_RTEE);
-		    else
-			addch(ACS_LRCORNER);
+            if (maze[y][x].bottom) {
+                if (maze[y][x].right) {
+                    if (eastBottom && southRight)
+                        addch(ACS_PLUS);
+                    else if (eastBottom)
+                        addch(ACS_BTEE);
+                    else if (southRight)
+                        addch(ACS_RTEE);
+                    else
+                        addch(ACS_LRCORNER);
 
-		} else {
-		    if (eastBottom && southRight)
-			addch(ACS_TTEE);
-		    else if (southRight)
-			addch(ACS_URCORNER);
-		    else
-			addch(ACS_HLINE);
-		}
+                } else {
+                    if (eastBottom && southRight)
+                        addch(ACS_TTEE);
+                    else if (southRight)
+                        addch(ACS_URCORNER);
+                    else
+                        addch(ACS_HLINE);
+                }
 
-	    } else if (maze[y][x].right) {
-		if (eastBottom && southRight)
-		    addch(ACS_LTEE);
-		else if (eastBottom)
-		    addch(ACS_LLCORNER);
-		else
-		    addch(ACS_VLINE);
+            } else if (maze[y][x].right) {
+                if (eastBottom && southRight)
+                    addch(ACS_LTEE);
+                else if (eastBottom)
+                    addch(ACS_LLCORNER);
+                else
+                    addch(ACS_VLINE);
 
-	    } else {
-		if (eastBottom && southRight)
-		    addch(ACS_ULCORNER);
-		else
-		    addch(' ');
-	    }
-	}
+            } else {
+                if (eastBottom && southRight)
+                    addch(ACS_ULCORNER);
+                else
+                    addch(' ');
+            }
+        }
 
-	addch('\n');
+        addch('\n');
     }
 
     refresh();
@@ -330,54 +324,53 @@ static void printMaze(void)
  *		down, then left, then up.
  */
 
-static void solveMaze(void)
-{
+static void solveMaze(void) {
     int x, y;
-    COORD *cp;
+    COORD* cp;
 
 
-    for (y = 0; y < height; y ++)
-	for (x = 0; x < width; x ++)
-	    maze[y][x].visited = false;
+    for (y = 0; y < height; y++)
+        for (x = 0; x < width; x++)
+            maze[y][x].visited = false;
 
     y = 0;
     x = 0;
 
     while (y != height - 1 || x != width - 1) {
-	draw(x, y, true);
-	maze[y][x].visited = true;
+        draw(x, y, true);
+        maze[y][x].visited = true;
 
-	if (!maze[y][x].right && !maze[y][x + 1].visited) {
-	    addLast(list, mkcoord(x + 1, y));
-	    maze[y][x + 1].from = 1;
-	}
+        if (!maze[y][x].right && !maze[y][x + 1].visited) {
+            addLast(list, mkcoord(x + 1, y));
+            maze[y][x + 1].from = 1;
+        }
 
-	if (!maze[y][x].bottom && !maze[y + 1][x].visited) {
-	    addLast(list, mkcoord(x, y + 1));
-	    maze[y + 1][x].from = width;
-	}
+        if (!maze[y][x].bottom && !maze[y + 1][x].visited) {
+            addLast(list, mkcoord(x, y + 1));
+            maze[y + 1][x].from = width;
+        }
 
-	if (x > 0 && !maze[y][x - 1].right && !maze[y][x - 1].visited) {
-	    addLast(list, mkcoord(x - 1, y));
-	    maze[y][x - 1].from = -1;
-	}
+        if (x > 0 && !maze[y][x - 1].right && !maze[y][x - 1].visited) {
+            addLast(list, mkcoord(x - 1, y));
+            maze[y][x - 1].from = -1;
+        }
 
-	if (y > 0 && !maze[y - 1][x].bottom && !maze[y - 1][x].visited) {
-	    addLast(list, mkcoord(x, y - 1));
-	    maze[y - 1][x].from = -width;
-	}
+        if (y > 0 && !maze[y - 1][x].bottom && !maze[y - 1][x].visited) {
+            addLast(list, mkcoord(x, y - 1));
+            maze[y - 1][x].from = -width;
+        }
 
-	cp = getLast(list);
+        cp = getLast(list);
 
-	if (cp->x == x && cp->y == y) {
-	    draw(x, y, false);
-	    removeLast(list);
-	    free(cp);
-	}
+        if (cp->x == x && cp->y == y) {
+            draw(x, y, false);
+            removeLast(list);
+            free(cp);
+        }
 
-	cp = getLast(list);
-	x = cp->x;
-	y = cp->y;
+        cp = getLast(list);
+        x = cp->x;
+        y = cp->y;
     }
 
     draw(width - 1, height - 1, true);
@@ -390,10 +383,9 @@ static void solveMaze(void)
  * Description:	Driver function for the maze application.
  */
 
-int main(void)
-{
+int main(void) {
     int x, y;
-    WINDOW *win;
+    WINDOW* win;
 
 
     win = initscr();
@@ -404,23 +396,23 @@ int main(void)
     createMaze();
 
     do {
-	clear();
-	refresh();
-	initMaze();
+        clear();
+        refresh();
+        initMaze();
 
-	list = createList(NULL);
-	buildMaze(0, 0);
-	destroyList(list);
+        list = createList(NULL);
+        buildMaze(0, 0);
+        destroyList(list);
 
-	printMaze();
+        printMaze();
 
-	list = createList(NULL);
-	solveMaze();
-	destroyList(list);
+        list = createList(NULL);
+        solveMaze();
+        destroyList(list);
 
-	move(height * 2 + 1, 0);
-	printw("Press 'q' to quit or any other key to run again.");
-	refresh();
+        move(height * 2 + 1, 0);
+        printw("Press 'q' to quit or any other key to run again.");
+        refresh();
     } while (getchar() != 'q');
 
     clear();

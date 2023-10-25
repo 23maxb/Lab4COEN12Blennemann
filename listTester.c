@@ -10,27 +10,30 @@ int compare(int a, int b) {
 
 int main(int argv, char* argc[]) {
     LIST* lp = createList(NULL);
-    int i = 51;
-    printf("adding %u\n", i);
-    addLast(lp, &i);
-    i = 5;
-    printf("adding %u\n", i);
-    addLast(lp, &i);
-    i = 7;
-    printf("adding %u\n", i);
-    addLast(lp, &i);
-    i = 17;
-    printf("adding %u\n", i);
-    addLast(lp, &i);
-    i = 99;
-    printf("adding %u\n", i);
-    addLast(lp, &i);
+    int* p;
+    int b;
+    for (b = 0; b < 8; b++) {
+        p = malloc(sizeof(int));
+        assert(p != NULL);
+        *p = b;
+        printf("adding %u\n", *(int*) p);
+        addLast(lp, p);
+    }
     printf("numItems: %d\n", numItems(lp));
     printf("first: %d\n", *(int*) getFirst(lp));
+    removeFirst(lp);
+    printf("first: %d\n", *(int*) getFirst(lp));
+    printf("last: %d\n", *(int*) getLast(lp));
+    removeLast(lp);
+    removeLast(lp);
     printf("last: %d\n", *(int*) getLast(lp));
     printf("numItems: %d\n", numItems(lp));
     debugPrint(lp);
 
+
+    p = malloc(sizeof(int));
+    *p = 2;
+    printf("findItem: %d\n", *(int*) findItem(lp, p));
     destroyList(lp);
     exit(EXIT_SUCCESS);
 }
