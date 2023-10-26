@@ -1,7 +1,7 @@
 //list.c
 /**
  * This file (list.c) is an implementation for the list data type.
- * It uses an arraylist to model the list internally.
+ * It uses an linked list to model the list internally.
  *
  * @author Max Blennemann
  * @version 10/23/23
@@ -142,6 +142,7 @@ void* removeFirst(LIST* lp) {
     lp->count--;
     return toReturn;
 }
+
 /**
  * Removes the last node in the list.
  *

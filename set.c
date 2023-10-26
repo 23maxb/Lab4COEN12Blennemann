@@ -39,6 +39,7 @@ SET* createSet(int maxElts, int (* compare)(), unsigned (* hash)()) {
     assert(maxElts >= 0);
     genericCollisionProofSet* a = malloc(sizeof(genericCollisionProofSet));
     a->size = maxElts;
+    a->count = 0;
     a->data = malloc(sizeof(LinkedList) * maxElts);
     assert(a->data != NULL);
     unsigned i = 0;
@@ -103,7 +104,7 @@ void addElement(SET* sp, void* elt) {
 void removeElement(SET* sp, void* elt) {
     assert(sp != NULL);
     assert(elt != NULL);
-    removeItem(&sp->data[sp->hash(elt) % sp->size], elt);
+    removeItem(&(sp->data[sp->hash(elt) % sp->size]), elt);
 }
 
 
