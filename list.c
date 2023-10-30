@@ -205,7 +205,7 @@ void removeItem(LIST* lp, void* item) {
     assert(item != NULL);
     Node* pDel = lp->head->next;
     while (pDel != lp->head) {
-        if (lp->compare(pDel->data, item) == 0) {
+        if ((*lp->compare)(pDel->data, item) == 0) {
             pDel->prev->next = pDel->next;
             pDel->next->prev = pDel->prev;
             free(pDel);
@@ -229,10 +229,8 @@ void* findItem(LIST* lp, void* item) {
     assert(item != NULL);
     assert(lp->compare != NULL);
     Node* pDel = lp->head->next;
-
     while (pDel != lp->head) {
-        printf("hi");
-        if (lp->compare(pDel->data, item) == 0) {
+        if ((*lp->compare)(pDel->data, item) == 0) {
             return pDel->data;
         }
         pDel = pDel->next;

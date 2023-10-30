@@ -122,7 +122,9 @@ void removeElement(SET* sp, void* elt) {
 void* findElement(SET* sp, void* elt) {
     assert(sp != NULL);
     assert(elt != NULL);
-    return findItem(&sp->data[sp->hash(elt) % sp->size], elt);
+    unsigned location = (*sp->hash)(elt) % sp->size;
+    printf("what");
+    return findItem(&sp->data[location], elt);
 }
 
 /**
