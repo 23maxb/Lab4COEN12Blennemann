@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
 
     /* Print the list of words if desired. */
 
-    if (lflag) {
+    if (true) {
         elts = getElements(unique);
 
         for (i = 0; i < numElements(unique); i++)
@@ -137,6 +137,7 @@ int main(int argc, char* argv[]) {
 
         free(elts);
     }
+    printf("hi");
     destroySet(unique);
     exit(EXIT_SUCCESS);
 }

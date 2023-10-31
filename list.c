@@ -37,7 +37,7 @@ typedef struct list {
  * @timeComplexity O(1)
  */
 LIST* createList(int (* compare)()) {
-    LinkedList* lp = malloc(sizeof(LinkedList));
+    LIST* lp = malloc(sizeof(LinkedList));
     assert(lp != NULL);
     lp->count = 0;
     lp->head = malloc(sizeof(Node));
@@ -46,6 +46,7 @@ LIST* createList(int (* compare)()) {
     lp->head->next = lp->head;
     lp->head->prev = lp->head;
     lp->compare = compare;
+    printf("end of createList with count %i\n", lp->count);
     return lp;
 }
 
@@ -57,7 +58,9 @@ LIST* createList(int (* compare)()) {
  */
 void destroyList(LIST* lp) {
     assert(lp != NULL);
+    printf("start of destroyList with count %i\n", lp->count);
     Node* pDel = lp->head->next;
+    printf("check HERE!!!: %u", pDel == NULL);
     while (pDel->data != NULL) {
         pDel = pDel->next;
         free(pDel->prev);
@@ -90,6 +93,7 @@ int numItems(LIST* lp) {
  * @timeComplexity O(1)
  */
 void addFirst(LIST* lp, void* item) {
+    printf("start of addFirsrt with count %i\n", lp->count);
     assert(lp != NULL);
     assert(item != NULL);
     Node* pNew = malloc(sizeof(Node));
@@ -99,6 +103,7 @@ void addFirst(LIST* lp, void* item) {
     pNew->prev = lp->head;
     lp->head->next->prev = pNew;
     lp->head->next = pNew;
+    printf("end of addfirst with count %i\n", lp->count);
     lp->count++;
 }
 
@@ -110,6 +115,7 @@ void addFirst(LIST* lp, void* item) {
  * @timeCompleixty O(1)
  */
 void addLast(LIST* lp, void* item) {
+    printf("start of addlast with count %i\n", lp->count);
     assert(lp != NULL);
     assert(item != NULL);
     Node* pNew = malloc(sizeof(Node));
@@ -120,7 +126,9 @@ void addLast(LIST* lp, void* item) {
     lp->head->prev->next = pNew;
     lp->head->prev = pNew;
     lp->count++;
+    printf("end of addLast with count %i\n", lp->count);
 }
+
 
 /**
  * Removes the first element.
@@ -130,6 +138,7 @@ void addLast(LIST* lp, void* item) {
  * @timeComplexity O(1)
  */
 void* removeFirst(LIST* lp) {
+    printf("start of removeFirst with count %i\n", lp->count);
     assert(lp != NULL);
     if (lp->count == 0)
         return NULL;
@@ -140,6 +149,7 @@ void* removeFirst(LIST* lp) {
     lp->head->next->prev = lp->head;
     free(pDel);
     lp->count--;
+    printf("end of removeFirst with count %i\n", lp->count);
     return toReturn;
 }
 
@@ -151,6 +161,7 @@ void* removeFirst(LIST* lp) {
  * @timeComplexity O(1)
  */
 void* removeLast(LIST* lp) {
+    printf("start of removeLast with count %i\n", lp->count);
     assert(lp != NULL);
     if (lp->count == 0)
         return NULL;
@@ -161,6 +172,7 @@ void* removeLast(LIST* lp) {
     lp->head->prev->next = lp->head;
     free(pDel);
     lp->count--;
+    printf("end of removeLast with count %i\n", lp->count);
     return toReturn;
 }
 
@@ -198,10 +210,14 @@ void* getLast(LIST* lp) {
  * @timeComplexity O(N)
  */
 void removeItem(LIST* lp, void* item) {
+
     assert(lp != NULL);
     assert(lp->compare != NULL);
-    if (lp->count == 0)
+    printf("start of removeItem with count %i\n", lp->count);
+    if (lp->count == 0) {
+        printf("end of removeItem with count %i\n", lp->count);
         return;
+    }
     assert(item != NULL);
     Node* pDel = lp->head->next;
     while (pDel != lp->head) {
@@ -210,9 +226,23 @@ void removeItem(LIST* lp, void* item) {
             pDel->next->prev = pDel->prev;
             free(pDel);
             lp->count--;
+            printf("end of removeItem with count %i\n", lp->count);
             return;
         }
         pDel = pDel->next;
+    }
+}
+
+void debugPrint(LIST* lp) {
+    assert(lp != NULL);
+    void** items = malloc(sizeof(void*) * lp->count);
+    assert(items != NULL);
+    Node* pDel = lp->head->next;
+    unsigned i = 0;
+    while (pDel->data != NULL) {
+        printf("%i\n", *(int*) pDel->data);
+        pDel = pDel->next;
+        i++;
     }
 }
 
@@ -228,13 +258,20 @@ void* findItem(LIST* lp, void* item) {
     assert(lp != NULL);
     assert(item != NULL);
     assert(lp->compare != NULL);
+    printf("start of findItem with count %i\n", lp->count);
     Node* pDel = lp->head->next;
+    if (pDel->data == NULL) {
+        printf("end of findItem with count %i\n", lp->count);
+        return NULL;
+    }
     while (pDel != lp->head) {
         if ((*lp->compare)(pDel->data, item) == 0) {
+            printf("end of findItem with count %i\n", lp->count);
             return pDel->data;
         }
         pDel = pDel->next;
     }
+    printf("end of findItem with count %i\n", lp->count);
     return NULL;
 }
 
@@ -258,3 +295,4 @@ void* getItems(LIST* lp) {
     }
     return items;
 }
+

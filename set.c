@@ -10,6 +10,7 @@
  */
 
 #include "set.h"
+#include "list.h"
 #include "list.c"
 #include <stdlib.h>
 #include <assert.h>
@@ -17,7 +18,7 @@
 #include <stdbool.h>
 
 typedef struct set {
-    LinkedList* data;
+    LIST** data;
     unsigned int count; // Number of elements that contain data
     unsigned int size; // How much space is allocated to the array
 
@@ -31,20 +32,23 @@ typedef struct set {
  *
  * @param maxElts the maximum amount of elements the set can hold
  * @return the newly allocated set
- * @timeComplexity O(N) Where N is the maximum number of elements the set can hold (maxElts)
+ * @timeComplexity O(N) Where N is the maximum number of linked lists you want
  */
 SET* createSet(int maxElts, int (* compare)(), unsigned (* hash)()) {
     assert(compare != NULL);
     assert(hash != NULL);
     assert(maxElts >= 0);
     genericCollisionProofSet* a = malloc(sizeof(genericCollisionProofSet));
-    a->size = maxElts;
+    a->size = maxElts / 20;
     a->count = 0;
-    a->data = malloc(sizeof(LinkedList) * maxElts);
+    a->hash = hash;
+    a->compare = compare;
+    a->data = malloc(sizeof(LIST*) * a->size);
     assert(a->data != NULL);
     unsigned i = 0;
     for (; i < maxElts; i++) {
-        a->data[i] = *createList(compare);
+        a->data[i] = createList(compare);
+        printf(a->data[i]->count);
     }
     return a;
 }
@@ -59,7 +63,8 @@ void destroySet(SET* sp) {
     assert(sp != NULL);
     unsigned i = 0;
     for (; i < sp->size; i++)
-        destroyList(&sp->data[i]);
+        destroyList(sp->data[i]);
+    free(sp->data);
     free(sp);
 }
 
@@ -86,10 +91,13 @@ int numElements(SET* sp) {
 void addElement(SET* sp, void* elt) {
     assert(sp != NULL);
     assert(elt != NULL);
-    assert(sp->count < sp->size);
-    unsigned index = sp->hash(elt) % sp->size;
-    addFirst(&sp->data[index], elt);
-    sp->count++;
+    unsigned index = (*sp->hash)(elt) % sp->size;
+    printf("\n index: %u\n", index);
+    printf("\nfind element == null %u", findElement(sp, elt) == NULL);
+    if (findElement(sp, elt) == NULL) {
+        addFirst(sp->data[index], elt);
+        sp->count++;
+    }
 }
 
 /**
@@ -104,7 +112,7 @@ void addElement(SET* sp, void* elt) {
 void removeElement(SET* sp, void* elt) {
     assert(sp != NULL);
     assert(elt != NULL);
-    removeItem(&(sp->data[sp->hash(elt) % sp->size]), elt);
+    removeItem((sp->data[(*sp->hash)(elt) % sp->size]), elt);
 }
 
 
@@ -123,31 +131,7 @@ void* findElement(SET* sp, void* elt) {
     assert(sp != NULL);
     assert(elt != NULL);
     unsigned location = (*sp->hash)(elt) % sp->size;
-    printf("what");
-    return findItem(&sp->data[location], elt);
+    printf("location: %u:", location);
+    return findItem(sp->data[location], elt);
 }
 
-/**
- * Copies all the values in the set to a new array and returns that new array.
- * The user must free the array of generics before exiting to avoid a memory leak.
- * Since this set is not sorted by any distinguishable features of the generics
- * the returned array is not guaranteed to be sorted in any way.
- *
- * @param sp The set to access
- * @return A new array of void* pointers to the generics in the sets
- * @timeComplexity O(N)
- */
-void* getElements(SET* sp) {
-    assert(sp != NULL);
-    void** toReturn = malloc(sp->count * sizeof(void*));
-    assert(toReturn != NULL);
-    unsigned i = 0;
-    for (; i < sp->count; i++) {
-        Node temp = *sp->data[i].head->next;
-        while (temp.data != NULL) {
-            toReturn[i] = temp.data;
-            temp = *temp.next;
-        }
-    }
-    return toReturn;
-}
